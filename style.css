@@ -1,0 +1,133 @@
+/* Reset & Base */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff;
+    background-color: #111;
+}
+
+/* Links */
+a {
+    color: #1abc9c;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: #16a085;
+}
+
+/* Logo */
+header .logo {
+    width: 100px;
+    margin-bottom: 10px;
+}
+
+/* Header */
+header {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+header h1 {
+    font-size: 3em;
+    color: #1abc9c;
+    text-shadow: 2px 2px 8px #000;
+    margin-top: 10px;
+}
+
+header p {
+    font-size: 1.2em;
+    color: #ccc;
+    margin-top: 10px;
+}
+
+/* HERO SECTION */
+.hero {
+    margin-top: 20px;
+}
+
+.hero-logo {
+    width: 200px;
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Smooth floating animation */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Navigation */
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+nav a {
+    font-weight: bold;
+}
+
+/* Sections */
+section {
+    padding: 60px 20px;
+    text-align: center;
+}
+
+section:nth-child(even) {
+    background-color: #1a1a1a;
+}
+
+section h2 {
+    color: #1abc9c;
+    margin-bottom: 20px;
+}
+
+section p {
+    max-width: 700px;
+    margin: auto;
+    color: #ccc;
+    line-height: 1.7;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background: #1abc9c;
+    color: #fff;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background: #16a085;
+    transform: translateY(-2px);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 30px 20px;
+    font-size: 0.9em;
+    border-top: 1px solid #222;
+    margin-top: 50px;
+}
+
+/* Footer clickable link */
+footer a {
+    color: #888;
+}
+
+footer a:hover {
+    color: #1abc9c;
+}
