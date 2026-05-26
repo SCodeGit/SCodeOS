@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCode OS: AI-First GIS Operating System</title>
+    <!-- Tailwind CSS for modern utility-first styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for beautiful interactive analytics charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0F172A; /* Slate 900 */
+            color: #F1F5F9; /* Slate 100 */
+        }
+        
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 350px;
+        }
+
+        /* Nav & Interaction Styles */
+        .nav-active {
+            background-color: #1E293B; /* Slate 800 */
+            border-left: 4px solid #6366F1; /* Indigo 500 */
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        /* Custom scrollbar for slate panel look */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0F172A;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- SIDEBAR -->
+    <aside class="w-20 md:w-64 bg-slate-950 border-r border-slate-800 flex flex-col justify-between shadow-xl z-10 flex-shrink-0 transition-all duration-300">
+        <div>
+            <!-- Branding Header -->
+            <div class="h-16 flex flex-col justify-center px-4 md:px-6 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl font-black text-indigo-500 tracking-wider">SCode OS</span>
+                    <span class="bg-indigo-500/10 text-indigo-400 text-[10px] font-mono px-1.5 py-0.5 rounded border border-indigo-500/20 hidden md:inline-block">v1.0</span>
+                </div>
+                <span class="text-[9px] text-slate-500 tracking-wider uppercase font-semibold hidden md:block mt-0.5">By Atubra Abraham</span>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="mt-6 flex flex-col gap-1.5 px-2">
+                <button data-target="view-overview" class="nav-btn w-full flex items-center p-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition-all nav-active">
+                    <span class="text-lg w-8 text-center">&#128187;</span>
+                    <span class="ml-3 text-sm hidden md:block">System Overview</span>
+                </button>
+                <button data-target="view-architecture" class="nav-btn w-full flex items-center p-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+                    <span class="text-lg w-8 text-center">&#128640;</span>
+                    <span class="ml-3 text-sm hidden md:block">OS Architecture</span>
+                </button>
+                <button data-target="view-trends" class="nav-btn w-full flex items-center p-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+                    <span class="text-lg w-8 text-center">&#128200;</span>
+                    <span class="ml-3 text-sm hidden md:block">Market Context</span>
+                </button>
+                <button data-target="view-risks" class="nav-btn w-full flex items-center p-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+                    <span class="text-lg w-8 text-center">&#9888;&#65039;</span>
+                    <span class="ml-3 text-sm hidden md:block">Risk Mitigation</span>
+                </button>
+                <button data-target="view-roadmap" class="nav-btn w-full flex items-center p-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+                    <span class="text-lg w-8 text-center">&#128203;</span>
+                    <span class="ml-3 text-sm hidden md:block">Project Roadmap</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Sidebar footer -->
+        <div class="p-4 border-t border-slate-900 hidden md:block">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-xs text-slate-400 font-medium">Development Active</span>
+            </div>
+            <p class="text-[10px] text-slate-500 leading-relaxed">Designed in Ghana for the global developer ecosystem.</p>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 h-full overflow-y-auto bg-slate-900 relative">
+        <!-- Top Sticky Header -->
+        <header class="h-16 bg-slate-950/80 backdrop-blur border-b border-slate-800 flex items-center justify-between px-6 sticky top-0 z-20">
+            <div class="flex items-center gap-3">
+                <h1 id="header-title" class="text-lg font-bold text-slate-100">System Overview</h1>
+                <span class="bg-indigo-500/20 text-indigo-300 text-[11px] font-mono px-2 py-0.5 rounded border border-indigo-500/30">Linux-Based</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-emerald-500/20">AI & GIS Native</span>
+            </div>
+        </header>
+
+        <!-- Main Wrapper Container -->
+        <div class="p-6 md:p-8 max-w-7xl mx-auto pb-24">
+            
+            <!-- SECTION 1: SYSTEM OVERVIEW -->
+            <section id="view-overview" class="view-section fade-in">
+                <!-- Project Core Mission -->
+                <div class="mb-8 p-6 md:p-8 bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-950 rounded-2xl border border-indigo-500/20 shadow-xl relative overflow-hidden">
+                    <div class="relative z-10 max-w-4xl">
+                        <span class="text-indigo-400 font-mono text-xs font-semibold uppercase tracking-widest block mb-2">Architect's Vision</span>
+                        <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-4 tracking-tight">
+                            Atubra Abraham’s SCode OS
+                        </h2>
+                        <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-6">
+                            SCode OS is designed as an <strong>AI-first, Linux-based operating system</strong> tailored with integrated <strong>GIS spatial capabilities</strong>, secure <strong>offline-first computing paradigms</strong>, and high-performance developer tools. By engineering custom integration directly into the system layers, SCode OS solves the issue of connectivity dependencies, bringing offline mapping and on-device intelligent assistance to users everywhere.
+                        </p>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="switchView('view-architecture')" class="bg-indigo-600 text-white font-medium px-5 py-2 rounded-lg hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20 text-sm">
+                                Explore Core Pillars &rarr;
+                            </button>
+                            <a href="https://github.com/SCodeGit" target="_blank" class="bg-slate-800 text-slate-200 border border-slate-700 font-medium px-5 py-2 rounded-lg hover:bg-slate-700 transition-all text-sm flex items-center gap-1">
+                                <span>View Abraham's GitHub</span>
+                                <span class="text-slate-400 text-xs">&#8599;</span>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Decorative background glow representation of a grid -->
+                    <div class="absolute inset-0 bg-[radial-gradient(#1e1e38_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none"></div>
+                </div>
+
+                <!-- Primary Core Features Grid -->
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Core Structural Pillars</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Feature 1: AI-First Interface -->
+                    <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 shadow-sm hover:border-indigo-500/40 transition-all group">
+                        <div class="w-12 h-12 rounded-lg bg-indigo-500/10 flex items-center justify-center text-2xl mb-4 text-indigo-400 group-hover:bg-indigo-500/20 transition-all">
+                            🤖
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-100 mb-2">AI-First Infrastructure</h4>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            On-device LLMs are embedded directly at the OS shell level. This ensures ultra-private, high-speed assistance without requiring a persistent internet connection.
+                        </p>
+                    </div>
+
+                    <!-- Feature 2: Native GIS Toolkit -->
+                    <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 shadow-sm hover:border-emerald-500/40 transition-all group">
+                        <div class="w-12 h-12 rounded-lg bg-emerald-500/10 flex items-center justify-center text-2xl mb-4 text-emerald-400 group-hover:bg-emerald-500/20 transition-all">
+                            🌍
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-100 mb-2">Native GIS Integrations</h4>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            Pre-configured, hardware-accelerated spatial databases and mapping environments allow cartographers, researchers, and urban developers to work instantly.
+                        </p>
+                    </div>
+
+                    <!-- Feature 3: Offline-First Security -->
+                    <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 shadow-sm hover:border-amber-500/40 transition-all group">
+                        <div class="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center text-2xl mb-4 text-amber-400 group-hover:bg-amber-500/20 transition-all">
+                            🛡️
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-100 mb-2">Offline-First Computing</h4>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            SCode OS is fortified with local encryption, isolated sandbox execution, and local package syncing, guaranteeing work continuity even in extreme network-deprived regions.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Strategic Quick Stats -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 p-5 bg-slate-950 rounded-xl border border-slate-800">
+                    <div class="text-center p-3">
+                        <div class="text-slate-400 text-xs uppercase font-mono mb-1">Lead Developer</div>
+                        <div class="text-sm font-bold text-slate-100">Atubra Abraham</div>
+                        <div class="text-[10px] text-slate-500">Ghana (West Africa)</div>
+                    </div>
+                    <div class="text-center p-3 border-l border-slate-800">
+                        <div class="text-slate-400 text-xs uppercase font-mono mb-1">Base Architecture</div>
+                        <div class="text-sm font-bold text-indigo-400">Linux Core</div>
+                        <div class="text-[10px] text-slate-500">Robust & Open Source</div>
+                    </div>
+                    <div class="text-center p-3 border-l border-slate-800">
+                        <div class="text-slate-400 text-xs uppercase font-mono mb-1">Target Audience</div>
+                        <div class="text-sm font-bold text-emerald-400">Devs & GIS Specialists</div>
+                        <div class="text-[10px] text-slate-500">Advanced Spatial Utilities</div>
+                    </div>
+                    <div class="text-center p-3 border-l border-slate-800">
+                        <div class="text-slate-400 text-xs uppercase font-mono mb-1">Core Focus</div>
+                        <div class="text-sm font-bold text-amber-400">Offline Intelligence</div>
+                        <div class="text-[10px] text-slate-500">No Clouds Mandatory</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: SYSTEM ARCHITECTURE -->
+            <section id="view-architecture" class="view-section hide fade-in">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-white mb-2">Internal Subsystem Topology</h2>
+                    <p class="text-slate-400 text-sm max-w-3xl">
+                        SCode OS optimizes standard Linux kernels by layering unique, highly-integrated developer-friendly systems specifically constructed for local intelligence and spatial telemetry processing.
+                    </p>
+                </div>
+
+                <!-- Custom ASCII / Structured Subsystem visual block -->
+                <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 mb-8 font-mono text-sm leading-relaxed overflow-x-auto text-indigo-300">
+                    <div class="text-slate-400 text-xs mb-3 font-sans font-bold uppercase tracking-wider">SCode OS Layer Stack:</div>
+                    <div class="border border-slate-800 p-3 bg-slate-900 rounded mb-2 text-center text-white font-bold">
+                        USER SPACE: Local AI Prompt Shell & Unified GIS Workspace
+                    </div>
+                    <div class="flex gap-2 mb-2">
+                        <div class="flex-1 border border-indigo-500/30 p-3 bg-indigo-950/20 rounded text-center text-xs">
+                            <strong class="text-indigo-400">SCode AI Kernel Daemon</strong><br>Local model weights (TinyLlama/Gemma-2B) cached & loaded directly via Ollama/llama.cpp
+                        </div>
+                        <div class="flex-1 border border-emerald-500/30 p-3 bg-emerald-950/20 rounded text-center text-xs">
+                            <strong class="text-emerald-400">Local GIS Subsystem</strong><br>Optimized GDAL/OGR compilers, QGIS core dependencies, offline OpenStreetMap tiles
+                        </div>
+                    </div>
+                    <div class="border border-slate-800 p-3 bg-slate-900 rounded mb-2 text-center text-slate-300 text-xs">
+                        <strong>Security & Virtualization Layer</strong><br>Offline-first isolated flatpaks, sandboxed secure compiler runtimes (WebAssembly)
+                    </div>
+                    <div class="border border-slate-800/60 p-2 bg-slate-950 rounded text-center text-slate-500 text-xs">
+                        <strong>Debian / Arch Core</strong> (Custom Linux Kernel with enhanced RISC-V & ARM hardware enablement)
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-950 p-6 rounded-xl border border-slate-800">
+                        <h4 class="text-base font-bold text-slate-100 mb-3 flex items-center gap-2">
+                            <span class="text-indigo-400">&#128161;</span> Why Offline-First AI is Revolutionary
+                        </h4>
+                        <p class="text-sm text-slate-400 leading-relaxed mb-4">
+                            Typical modern operating systems rely on cloud endpoints (e.g., Microsoft Copilot, Apple Intelligence) which require persistent, high-bandwidth connections and involve complex privacy compliance. 
+                        </p>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            <strong>Atubra's SCode OS strategy:</strong> Embedding smaller, optimized, open-source language models directly into the OS user profile space. By running on local CPUs, integrated GPUs, or dedicated NPUs, SCode OS delivers standard developer code autocompletion and command prompt compilation offline.
+                        </p>
+                    </div>
+                    
+                    <div class="bg-slate-950 p-6 rounded-xl border border-slate-800">
+                        <h4 class="text-base font-bold text-slate-100 mb-3 flex items-center gap-2">
+                            <span class="text-emerald-400">&#128506;&#65039;</span> Integrated GIS & Spatial Intelligence
+                        </h4>
+                        <p class="text-sm text-slate-400 leading-relaxed mb-4">
+                            Usually, GIS developers waste hours compiling spatial dependencies, managing conflicting database installations (like PostGIS), and syncing map tiles. 
+                        </p>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            <strong>SCode OS's answer:</strong> Pre-built local raster/vector processing engines running inside system-managed isolation containers. SCode OS provides out-of-the-box support for offline geospatial mapping data visualization, localized weather/coordinate modeling, and developer APIs.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: MARKET CONTEXT -->
+            <section id="view-trends" class="view-section hide fade-in">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-white mb-2">Strategic Market Context (2026)</h2>
+                    <p class="text-slate-400 text-sm max-w-3xl">
+                        Entering the OS space requires a solid positioning model. SCode OS is perfectly positioned to capitalize on three primary structural market shifts.
+                    </p>
+                </div>
+
+                <!-- Chart.js and text split grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                    <!-- Chart Column -->
+                    <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 lg:col-span-2">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-200">Demand Index for Niche OS Capabilities</h4>
+                                <p class="text-xs text-slate-500">Historical & Projected Demand Shift (%)</p>
+                            </div>
+                            <span class="text-xs font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">Market Trends</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="trendsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Side Stats & Explanation Column -->
+                    <div class="flex flex-col gap-6">
+                        <!-- Key Trend 1 -->
+                        <div class="bg-slate-950 p-5 rounded-xl border border-slate-800">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-indigo-400 text-lg">&#128640;</span>
+                                <h4 class="font-bold text-sm text-slate-200">Developer Preference Shift</h4>
+                            </div>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Software developers are moving back to customized, local-compilation environments to bypass heavy telemetry and slow remote-only configurations.
+                            </p>
+                        </div>
+                        <!-- Key Trend 2 -->
+                        <div class="bg-slate-950 p-5 rounded-xl border border-slate-800">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-emerald-400 text-lg">&#127760;</span>
+                                <h4 class="font-bold text-sm text-slate-200">The Rise of Global GIS</h4>
+                            </div>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Demand for regional spatial data tracking has surged by 40% over the last three years, propelled by climate tracking, localized delivery networks, and infrastructure building across emerging markets.
+                            </p>
+                        </div>
+                        <!-- Key Trend 3 -->
+                        <div class="bg-slate-950 p-5 rounded-xl border border-slate-800">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-amber-400 text-lg">&#128268;</span>
+                                <h4 class="font-bold text-sm text-slate-200">Offline Resilience Need</h4>
+                            </div>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                As critical systems move entirely to the cloud, internet blackout events expose global vulnerabilities. SCode OS's offline-first architecture is a perfect insurance policy.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Local-focus strategic callout -->
+                <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 flex flex-col md:flex-row gap-6 items-center">
+                    <div class="text-4xl">🇬🇭</div>
+                    <div>
+                        <h4 class="text-base font-bold text-slate-100 mb-1">Local Value Proposition: The African Developer Wave</h4>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            The African tech landscape is booming, but many developers navigate power grids with intermittent connectivity and costly bandwidth. Atubra Abraham's design ensures SCode OS delivers a fully operational ecosystem featuring local AI assistant tooling, heavy offline spatial databases, and cached coding docs that run flawlessly completely disconnected.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: RISK ASSESSMENT -->
+            <section id="view-risks" class="view-section hide fade-in">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-white mb-2">Risk Impact & Strategic Mitigation</h2>
+                    <p class="text-slate-400 text-sm max-w-3xl">
+                        Building an operating system is technically challenging and highly competitive. This chart models SCode OS's unique risks, focusing on technical feasibility, model hosting sizes, and hardware support.
+                    </p>
+                </div>
+
+                <!-- Risk Bubble Chart Area -->
+                <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="text-sm font-bold text-slate-200">SCode OS Risk Assessment Matrix</h4>
+                        <div class="flex gap-4 text-xs font-mono">
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500/80"></span> Critical</span>
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500/80"></span> High</span>
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-500/80"></span> Moderate</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="riskMatrixChart"></canvas>
+                    </div>
+                    <p class="text-[11px] text-center text-slate-500 mt-4">Bubble size indicates the relative computational or structural engineering cost to resolve each risk.</p>
+                </div>
+
+                <!-- Detailed Mitigation Strategy Cards -->
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Mitigation Deep-Dive</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Mitigation Card 1 -->
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 hover:border-rose-500/30 transition-all">
+                        <div class="flex items-center gap-2 mb-2 text-rose-400">
+                            <span class="text-lg">&#128221;</span>
+                            <h5 class="font-bold text-sm">Managing Giant Local Model Weights</h5>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                            <strong>The Threat:</strong> Modern LLMs are massive (typically 4GB to 15GB+), which risks filling up the local SSDs of developers or slowing down memory-constrained devices.
+                        </p>
+                        <div class="bg-slate-900/60 p-3 rounded border border-slate-800 text-xs text-slate-300">
+                            <span class="font-bold text-indigo-400">Mitigation:</span> Implement smart on-demand model quantization models (2-bit or 4-bit) as the default. Allow system-level streaming, and pre-cache compact 1.5B/2B parameters models (such as Qwen or Gemma-2B) that occupy under 1.8GB of space.
+                        </div>
+                    </div>
+
+                    <!-- Mitigation Card 2 -->
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 hover:border-amber-500/30 transition-all">
+                        <div class="flex items-center gap-2 mb-2 text-amber-400">
+                            <span class="text-lg">&#128641;</span>
+                            <h5 class="font-bold text-sm">Hardware Acceleration & Divergent NPUs</h5>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                            <strong>The Threat:</strong> Machine learning algorithms perform poorly when running on basic CPUs. Meanwhile, NPU drivers are proprietary and difficult to program against.
+                        </p>
+                        <div class="bg-slate-900/60 p-3 rounded border border-slate-800 text-xs text-slate-300">
+                            <span class="font-bold text-indigo-400">Mitigation:</span> Rely on stable open-source compute abstractions (e.g., Vulkan, ROCm, or OpenCL) via compilers like llama.cpp. This guarantees seamless fallback to CPU multi-threading while tapping into standard AMD/NVIDIA/Intel graphics.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: SYSTEM ROADMAP -->
+            <section id="view-roadmap" class="view-section hide fade-in">
+                <div class="mb-8">
+                    <h2 class="text-xl font-bold text-white mb-2">SCode OS Phase Plan</h2>
+                    <p class="text-slate-400 text-sm max-w-3xl">
+                        A realistic, milestones-based development plan constructed around Atubra Abraham's vision of an AI-first, offline-capable GIS distribution.
+                    </p>
+                </div>
+
+                <!-- Roadmap Timeline Cards -->
+                <div class="relative border-l-2 border-indigo-500/30 ml-4 md:ml-6 space-y-12 pb-8">
+                    
+                    <!-- Phase 1 -->
+                    <div class="relative pl-8">
+                        <div class="absolute -left-3.5 top-1 w-7 h-7 bg-indigo-600 rounded-full flex items-center justify-center text-white text-xs font-bold border-4 border-slate-900 shadow">1</div>
+                        <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 shadow-lg">
+                            <div class="flex justify-between items-start flex-wrap gap-2 mb-2">
+                                <div>
+                                    <h4 class="text-base font-bold text-slate-100">Phase 1: Base Kernel & Local GIS Stack</h4>
+                                    <span class="text-xs text-indigo-400 font-mono">Months 0 - 12 (Current Focus)</span>
+                                </div>
+                                <span class="bg-indigo-500/15 text-indigo-300 text-[10px] uppercase font-mono px-2 py-0.5 rounded border border-indigo-500/20">In Progress</span>
+                            </div>
+                            <p class="text-sm text-slate-400 leading-relaxed mb-4">
+                                Establish the system's baseline. Custom compilation of standard Linux Kernel modules with optimized support for GIS development frameworks (GDAL, Proj, GeoPandas, and QGIS engine runtimes).
+                            </p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-slate-900 text-slate-400 text-[11px] px-2 py-0.5 rounded font-mono">Custom Linux kernel</span>
+                                <span class="bg-slate-900 text-slate-400 text-[11px] px-2 py-0.5 rounded font-mono">GDAL compiler sync</span>
+                                <span class="bg-slate-900 text-slate-400 text-[11px] px-2 py-0.5 rounded font-mono">Offline map rendering</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 2 -->
+                    <div class="relative pl-8">
+                        <div class="absolute -left-3.5 top-1 w-7 h-7 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 text-xs font-bold border-4 border-slate-900 shadow">2</div>
+                        <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 shadow-lg">
+                            <div class="flex justify-between items-start flex-wrap gap-2 mb-2">
+                                <div>
+                                    <h4 class="text-base font-bold text-slate-100">Phase 2: Local AI Daemon Integration</h4>
+                                    <span class="text-xs text-indigo-400 font-mono">Months 12 - 24</span>
+                                </div>
+                                <span class="bg-slate-900 text-slate-500 text-[10px] uppercase font-mono px-2 py-0.5 rounded">Planned</span>
+                            </div>
+                            <p class="text-sm text-slate-400 leading-relaxed mb-4">
+                                Integrate localized large language models at the shell level. Create custom terminal hooks that read user requests, auto-correct commands locally, and construct interactive coding pipelines securely without external network calls.
+                            </p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-slate-900 text-slate-400 text-[11px] px-2 py-0.5 rounded font-mono">Ollama system hooks</span>
+                                <span class="bg-slate-900 text-slate-400 text-[11px] px-2 py-0.5 rounded font-mono">Localized shell prompts</span>
+                                <span class="bg-slate-900 text-slate-400 text-[11px] px-2 py-0.5 rounded font-mono">Wasm compilation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 3 -->
+                    <div class="relative pl-8">
+                        <div class="absolute -left-3.5 top-1 w-7 h-7 bg-slate-800 rounded-full flex items-center justify-center text-slate-500 text-xs font-bold border-4 border-slate-900 shadow">3</div>
+                        <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 shadow-lg">
+                            <div class="flex justify-between items-start flex-wrap gap-2 mb-2">
+                                <div>
+                                    <h4 class="text-base font-bold text-slate-100">Phase 3: Public Beta & Developer Ecosystem Launch</h4>
+                                    <span class="text-xs text-indigo-400 font-mono">Months 24+</span>
+                                </div>
+                                <span class="bg-slate-900 text-slate-500 text-[10px] uppercase font-mono px-2 py-0.5 rounded">Future Vision</span>
+                            </div>
+                            <p class="text-sm text-slate-400 leading-relaxed mb-4">
+                                Distribute the stable SCode OS release to developers globally, targeting emerging tech hubs in Ghana, wider Africa, and international remote-first spatial development environments.
+                            </p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-slate-900 text-slate-400 text-[11px] px-2 py-0.5 rounded font-mono">International Beta</span>
+                                <span class="bg-slate-900 text-slate-400 text-[11px] px-2 py-0.5 rounded font-mono">Package Community Repo</span>
+                                <span class="bg-slate-900 text-slate-400 text-[11px] px-2 py-0.5 rounded font-mono">SCode App Store</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        const state = {
+            currentView: 'view-overview',
+            chartsInitialized: false
+        };
+
+        const viewTitles = {
+            'view-overview': 'System Overview',
+            'view-architecture': 'OS Architecture Subsystems',
+            'view-trends': 'Strategic Market Context',
+            'view-risks': 'Risk Impact Matrix',
+            'view-roadmap': 'Project Roadmap'
+        };
+
+        let trendsChartInstance = null;
+        let riskMatrixChartInstance = null;
+
+        // View switcher function
+        function switchView(targetId) {
+            // Hide all sections
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hide'));
+            
+            // Adjust sidebar navigation active styling
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('nav-active');
+                if (btn.dataset.target === targetId) {
+                    btn.classList.add('nav-active');
+                }
+            });
+
+            // Show selected section
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+                targetEl.classList.remove('hide');
+            }
+
+            // Update page title in dashboard header
+            const titleEl = document.getElementById('header-title');
+            if (titleEl && viewTitles[targetId]) {
+                titleEl.innerText = viewTitles[targetId];
+            }
+
+            state.currentView = targetId;
+
+            // Lazy initialize charts on relevant views
+            if ((targetId === 'view-trends' || targetId === 'view-risks') && !state.chartsInitialized) {
+                initCharts();
+                state.chartsInitialized = true;
+            }
+        }
+
+        // Attach event listeners to sidebar buttons
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const target = e.currentTarget.dataset.target;
+                switchView(target);
+            });
+        });
+
+        function initCharts() {
+            // Chart 1: Market Trends Chart (Line Chart)
+            const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+            trendsChartInstance = new Chart(trendsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['2021', '2022', '2023', '2024', '2025', '2026 (Est)', '2027 (Proj)'],
+                    datasets: [
+                        {
+                            label: 'On-Device AI Integration Demand',
+                            data: [10, 18, 25, 48, 70, 88, 95],
+                            borderColor: '#6366F1', // Indigo
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 3
+                        },
+                        {
+                            label: 'Offline GIS Utility Focus',
+                            data: [15, 22, 30, 42, 55, 68, 79],
+                            borderColor: '#10B981', // Emerald
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Offline-First Security Preference',
+                            data: [45, 48, 50, 58, 62, 75, 84],
+                            borderColor: '#F59E0B', // Amber
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: { color: '#1E293B' },
+                            ticks: { color: '#94A3B8', font: { family: 'Inter' } }
+                        },
+                        y: {
+                            grid: { color: '#1E293B' },
+                            ticks: { 
+                                color: '#94A3B8',
+                                callback: function(value) { return value + '%'; }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#F1F5F9', font: { family: 'Inter', size: 11 } },
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            backgroundColor: '#0F172A',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            titleColor: '#FFFFFF',
+                            bodyColor: '#F1F5F9'
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: SCode OS Risk Bubble Matrix Chart
+            const riskCtx = document.getElementById('riskMatrixChart').getContext('2d');
+            riskMatrixChartInstance = new Chart(riskCtx, {
+                type: 'bubble',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Giant LLM Local File Weights',
+                            data: [{ x: 80, y: 85, r: 24 }],
+                            backgroundColor: 'rgba(244, 63, 94, 0.7)', // Rose
+                            borderColor: 'rgb(244, 63, 94)',
+                            hoverRadius: 30
+                        },
+                        {
+                            label: 'Divergent Proprietary NPU Architectures',
+                            data: [{ x: 70, y: 75, r: 18 }],
+                            backgroundColor: 'rgba(245, 158, 11, 0.7)', // Amber
+                            borderColor: 'rgb(245, 158, 11)',
+                            hoverRadius: 24
+                        },
+                        {
+                            label: 'Ecosystem Lock-In (Dev Habits)',
+                            data: [{ x: 85, y: 65, r: 15 }],
+                            backgroundColor: 'rgba(245, 158, 11, 0.7)',
+                            borderColor: 'rgb(245, 158, 11)',
+                            hoverRadius: 20
+                        },
+                        {
+                            label: 'Offline GIS Data Ingestion Bottlenecks',
+                            data: [{ x: 45, y: 55, r: 20 }],
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)', // Blue
+                            borderColor: 'rgb(59, 130, 246)',
+                            hoverRadius: 25
+                        },
+                        {
+                            label: 'Upstream Linux Driver Support',
+                            data: [{ x: 30, y: 40, r: 12 }],
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            borderColor: 'rgb(59, 130, 246)',
+                            hoverRadius: 16
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Probability of Occurrence (%)', color: '#94A3B8' },
+                            grid: { color: '#1E293B' },
+                            ticks: { color: '#94A3B8' },
+                            min: 10, max: 100
+                        },
+                        y: {
+                            title: { display: true, text: 'Impact Severity (%)', color: '#94A3B8' },
+                            grid: { color: '#1E293B' },
+                            ticks: { color: '#94A3B8' },
+                            min: 10, max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0F172A',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: Probability ${context.parsed.x}%, Impact ${context.parsed.y}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
